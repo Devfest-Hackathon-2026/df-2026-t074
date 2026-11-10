@@ -32,3 +32,13 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 *.log
+
+# --- Jeri ---
+*service-account*.json
+*credentials*.json
+test-results/
+playwright-report/
+dist-firebase/
+.firebase/
+
+# --- Jeri ---

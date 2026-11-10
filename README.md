@@ -1,38 +1,108 @@
-# DevFest Hackathon 2026 提出用リポジトリ
+# Jeri
 
-  DevFest Hackathon 2026 のチームの **最終提出用** リポジトリです。提出期限までに、作品のコードと資料をこのリポジトリに置いてください。
+**Jeri reads one email once and gives you the same facts three ways — Listen, Captions and Easy Read — so you can find the ask, check the dates, and choose your next step.**
 
-  このリポジトリは **公開（public）** です。開催中も、運営・審査員・ほかの参加者が見られます。
+Built for DevFest GDGoC Japan Hackathon 2026 · Theme: *“Own the Why, Build with intent.”* · Team FullStuckEngineer
 
-  ## はじめに
+- **Live URL:** **https://jeri-fullstuckengineer.web.app** (Firebase Hosting). The page is served by Firebase Hosting and calls the API server at https://jeri.fullstuckengineer.workers.dev (Gemini analysis, Gemini TTS, saved results). CORE gate and accessibility checks passed on this URL on Tue 10 Nov 2026, 18:26 JST.
+- **Demo email:** “Northbridge” is fictional EXAMPLE DATA. No real inboxes or personal data are used. Details of all five test emails and what each is expected to produce: [docs/test-data.md](docs/test-data.md).
+- **Demo video (3:56, narrated, captioned):** [docs/video/jeri-demo-final.mp4](docs/video/jeri-demo-final.mp4). Made from screen recordings of the live site on 10 Nov 2026. Script, storyboard and edit notes: [docs/video/STORYBOARD.md](docs/video/STORYBOARD.md). Captions: [docs/video/jeri-demo-captions.srt](docs/video/jeri-demo-captions.srt).
 
-  1. GitHub から届いた招待を受け入れてください（招待の期限は 7 日です）
-  2. このリポジトリを clone して、提出物を置いてください
+## Why
 
-  招待の期限が切れたときや、メンバーが変わったときは、運営に連絡してください。
+Tinish juggles school, clubs, part-time work and interviews. Long walls of AI-written text arrive every day, and with dyslexia that means rereading again and again to find the actual request.
 
-  ## 開発用のリポジトリは別に作ることをおすすめします
+Jeri is for **people who cannot skim**: dyslexic, blind or low-vision, and Deaf or hard-of-hearing readers. It does not shorten the email. It keeps the meaning, points every fact back to the original sentence, and leaves the decision to you.
 
-  このリポジトリでは **GitHub Actions と GitHub Pages が使えません**。CI やデプロイ、Pages での公開をしたいときは、チームで開発用のリポジトリを別に作ってください。
+## What it does
 
-  - 開発用のリポジトリは、チームのメンバーのアカウントや、チームで作った Organization に作ってください
-  - 開発はそちらで進めて、提出期限までに最終版のコードと資料をこのリポジトリに push してください
-  - 審査はこのリポジトリの内容で行います。開発用のリポジトリにしかないものは、審査の対象になりません
-  - デプロイした作品の URL があれば、この README に書いてください
+1. **One email** (demo inbox, pasted, or Gmail read-only when signed in).
+2. **Gemini reads it once** with a strict JSON schema: the ask, evidence quotes (E1, E2…), dates as written, junk, spoken beats, easy-read cards, a draft reply.
+3. **Code checks every date.** The server parses each date *as written*, computes the real weekday in Japan time, and reports mismatches and “deadline after the event”. Gemini never decides a weekday. The original text is never changed.
+4. **One shared result, three modes on one screen:**
+   | Mode | What you get |
+   |---|---|
+   | Listen | Gemini 3.8 Flash TTS reads the spoken beats (one clip per beat; Cloud TTS fallback). No autoplay. Play, pause, resume, previous, next. Current sentence highlighted. |
+   | Captions | Exactly the same beats, same order, no sound needed. Warnings shown with icon + the word “Warning”. |
+   | Easy Read | Large plain cards: What · Ask · When · Risk · Skip · Next. Every “NOT” kept. |
+5. **Draft Dock**: always at the bottom. Edit clears approval. Switching modes keeps it. Approve shows **“Approved — not sent”**. Jeri never sends email.
 
-  ## 秘密情報をコミットしない
+Switching modes never calls the server and never re-runs Gemini.
 
-  API キー・パスワード・サービスアカウントの鍵などは、**絶対にコミットしないでください**。公開リポジトリなので、push
-  した時点で誰でも見られます。開発用のリポジトリから持ってくるときも、履歴ごと push すると、過去のコミットに含まれる秘密情報も公開されます。
+On the Northbridge demo Jeri catches: the buried ask (confirm the 30-minute Google Meet), **“Wednesday, 12 November 2026” is a Thursday**, **“Thursday, 13 November 2026” is a Friday**, the **confirm-by deadline is after the interview**, and that the newsletter / raffle / residence card are not needed for the call.
 
-  - 秘密情報は `.env` や `.dev.vars` などに書き、コミットしない（`.gitignore` に入れてあります）
-  - 誤って push したら、すぐにキー（鍵）を無効にして作り直し、運営に連絡してください。履歴から消すだけでは不十分です
-  - GitHub の push protection が、よく知られた形式のキーの push を止めることがあります。止められたら、そのキーをコミットから外してください
+## Google technology and why
 
-  ## 提出
+| Tech | Why |
+|---|---|
+| **Gemini API** (JSON mode + `responseSchema`) | Reads the email once and finds asks, evidence and junk for three kinds of readers. Retries once on bad JSON or non-exact quotes. |
+| **Gemini 3.8 Flash TTS** (Gemini API) | Speaks the beats with a prebuilt stock voice; language (English/Japanese) is detected automatically, and a calm, clear speaking style is set per request. One clip per beat so Captions can stop audio and keep the position. Same key as the analysis. |
+| **Cloud Text-to-Speech** (fallback) | Standard voices (en-US / ja-JP) used automatically if Gemini TTS is unavailable. |
+| **Firebase Authentication** | Google sign-in with the `gmail.readonly` scope (optional extra). |
+| **Cloud Firestore** | Saves each analysis by email ID (analyse once), and each signed-in user’s draft and approval. |
+| **Gmail API** | Read-only inbox list for the sidebar (optional extra, test inbox with fictional emails only). |
+| **Cloud Run** | Hosts the server and the page on one URL (no CORS). Keys stay server-side. |
 
-  提出の方法と締切は、運営からの案内に従ってください。提出期限を過ぎると、このリポジトリは読み取り専用になり、push できなくなります。
+## How to run
 
-  ## ライセンス
+```bash
+cp .env.example .env      # add GEMINI_API_KEY (Gemini API key; also used for Gemini TTS)
+npm install
+npm run dev               # http://localhost:8080
+npm test                  # date check + post-processing unit tests
+npm run core              # CORE gate (Playwright) against http://localhost:8080
+node scripts/a11y-check.js http://localhost:8080/   # keyboard, screen-reader structure, axe WCAG 2.1 AA
+```
 
-  [MIT License](LICENSE) です。ほかのライセンスにしたいときは、LICENSE を書き換えてください。
+Without a key you can run `JERI_STUB=1 npm start`: the screen then shows a red **STUB DATA** banner and uses the team’s sample file. It is never used in the demo.
+
+### Deploy the page to Firebase Hosting (free)
+
+```bash
+sh scripts/deploy-firebase.sh --new          # new free Firebase project in your account
+sh scripts/deploy-firebase.sh <PROJECT_ID>   # or an existing Firebase project you own
+```
+Builds `dist-firebase/` (the files in `public/` plus the API address) and deploys it. The API server must allow the site's origin (`*.web.app` is allowed by default).
+
+### Deploy the API server (Cloudflare Workers, free)
+
+```bash
+npm install && npm run deploy:cf
+```
+Step-by-step in Japanese and English: [docs/deploy-cloudflare.md](docs/deploy-cloudflare.md). Uses a free AI Studio Gemini key (stored as a Worker secret) and Workers KV for saved results and voice clips.
+
+### Deploy (Cloud Run)
+
+```bash
+PROJECT_ID=your-project GEMINI_API_KEY=... sh scripts/deploy.sh
+```
+or run the **Deploy Jeri to Cloud Run** GitHub Action (secrets listed at the top of `.github/workflows/deploy.yml`).
+Step-by-step (credit, key, Cloud Shell deploy): [docs/setup-google-cloud.md](docs/setup-google-cloud.md).
+Optional Firebase sign-in: set `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID` (public web config) and add the live domain to Firebase Auth → Authorized domains. Firestore rules are in `firestore.rules`.
+
+## Free-tier limits (good to know before a demo)
+- Gemini TTS free tier: about 3 requests/minute and 10/day **per model**. Jeri makes one clip per beat, one at a time, falls back through
+  `gemini-3.8-flash-tts → 3.8-flash-lite-tts → 3.1-flash-tts-preview → 2.5-flash-preview-tts`, and caches every clip (Firestore on Cloud Run).
+  Play the demo email once before recording so all clips are cached. Linking a billing account to the key's project removes these limits.
+- Analysis models are tried in order (`gemini-3.5-flash`, `gemini-3.8-flash`, `gemini-flash-latest`, lite models) and a busy (503) or slow one is skipped.
+
+## Project layout
+
+```
+server/      Express server: /api/analyze, /api/speak, prompt.js, schema.js, dateCheck.js, postprocess.js, store.js
+public/      One-screen app (HTML/CSS/JS, no build step), design tokens from the UI guide
+fixtures/    Fictional demo emails + sample-northbridge.json (EXAMPLE DATA)
+test/        Unit tests (node:test)
+scripts/     CORE gate, accessibility check, key scan, deploy
+docs/        Product description, 著作物利用シート, QA record, judge Q&A, video script
+```
+
+## Honesty notes
+
+- The demo emails are fictional (EXAMPLE DATA).
+- Accessibility: built with みつ’s UI guide and tested by keyboard, screen-reader structure checks and axe. This is **not** a claim of legal or JIS compliance.
+- Nothing on screen is hard-coded: every result comes from Gemini + code at run time.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE). Third-party assets are listed in [docs/copyright-sheet.md](docs/copyright-sheet.md).
